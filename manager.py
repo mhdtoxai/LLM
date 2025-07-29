@@ -106,12 +106,9 @@ prompt_template_member = '''
 
 ## FORMATO DE RESPUESTA JSON
 
-Cuando detectes una de estas acciones válidas, responde así:
+⚠️ Cuando detectes una de estas acciones válidas, responde **exactamente** con el JSON mostrado abajo. NO cambies el mensaje. Debe coincidir palabra por palabra.
 
-{
-    "mensaje": "Mensaje personalizado",
-    "action": "nombre_del_action_valido"
-}
+Solo responde con uno de estos bloques JSON:
 
         ####Solicitud de eventos disponibles:
 
