@@ -171,7 +171,7 @@ def ai_manager(message: str, member: bool = False):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "Saptiva Cortex", 
+                "model": "Saptiva Ops", 
                 "messages": [
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
