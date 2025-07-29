@@ -169,9 +169,11 @@ def ai_manager(message: str, member: bool = False):
     if member:
         prompt_template = prompt_template_member
         model_name = "Saptiva Ops"  # Capaz de razonar y obedecer lógica
+        temperature = 0.2           # Más estricta para acciones JSON
     else:
         prompt_template = prompt_template_no_member
         model_name = "Saptiva Turbo"  # Rápido, bajo costo, ideal para consultas informativas
+        temperature = 0.4             # Más natural para respuestas generales
 
     try:
         response = requests.post(
@@ -186,19 +188,17 @@ def ai_manager(message: str, member: bool = False):
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
-                "temperature": 0.4,
+                "temperature": temperature,
                 "max_tokens": 1024
             },
-            timeout=60  # opcional, para prevenir cuelgues
+            timeout=60
         )
 
         response.raise_for_status()
         data = response.json()
         content = data.get("choices", [{}])[0].get("message", {}).get("content", "[Sin respuesta]")
 
-        # 🧽 Limpiar etiquetas <think>
         content = content.replace("<think>", "").replace("</think>", "").strip()
-
         return content
 
     except Exception as e:
