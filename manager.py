@@ -55,11 +55,8 @@ Ser la cámara empresarial más representativa y confiable del estado, destacand
 
 🗣 Centro de Idiomas
 • Clases de inglés con enfoque TOEFL.
-
 Afiliados: $1,075
-
 No afiliados: $1,375
-
 Lunes, miércoles y viernes. Examen de ubicación requerido.
 
 🤝 Red de Negocios
@@ -76,7 +73,8 @@ Lunes, miércoles y viernes. Examen de ubicación requerido.
 
 🏛 Datos Institucionales
 📍 Dirección: Blvd. Francisco Villa #1028, Fracc. María Dolores, León, Gto. C.P. 37550
-🕐 Horario: Lunes a viernes, de 8:30 a.m. a 5:00 p.m.
+🕐 Horario: Lunes a viernes, de 8:30 a.m. a 5:00 p.m. , Tel: 477 714 2800.
+
 
 🌐 Redes Sociales:
 • Facebook: canacoservyturleon
@@ -157,11 +155,15 @@ Cuando detectes una de estas acciones válidas, responde así:
                 "action": "constancia_miembro"
             }
         '''
-
 def ai_manager(message: str, member: bool = False):
     print(f"Received member: {member}")
 
-    prompt_template = prompt_template_member if member else prompt_template_no_member
+    if member:
+        prompt_template = prompt_template_member
+        model_name = "Saptiva Ops"  # Capaz de razonar y obedecer lógica
+    else:
+        prompt_template = prompt_template_no_member
+        model_name = "Saptiva Turbo"  # Rápido, bajo costo, ideal para consultas informativas
 
     try:
         response = requests.post(
@@ -171,14 +173,15 @@ def ai_manager(message: str, member: bool = False):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "Saptiva Ops", 
+                "model": model_name,
                 "messages": [
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
                 "temperature": 0.4,
                 "max_tokens": 1024
-            }
+            },
+            timeout=60  # opcional, para prevenir cuelgues
         )
 
         response.raise_for_status()
