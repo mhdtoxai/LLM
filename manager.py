@@ -106,9 +106,20 @@ prompt_template_member = '''
 
 ## FORMATO DE RESPUESTA JSON
 
-⚠️ Cuando detectes una de estas acciones válidas, responde **exactamente** con el JSON mostrado abajo. NO cambies el mensaje. Debe coincidir palabra por palabra.
+Cuando detectes una de estas acciones válidas, responde así:
 
-Solo responde con uno de estos bloques JSON:
+        {
+        "mensaje": "Mensaje personalizado",
+        "action": "nombre_del_action_valido"
+        }
+
+
+        ####Crear credenciales:
+
+        {
+            "mensaje": "Estoy generando tu credencial, un momento...",
+            "action": "crear_credenciales"
+        }
 
         ####Solicitud de eventos disponibles:
 
