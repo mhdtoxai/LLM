@@ -1,206 +1,103 @@
 import os
 import requests
+import json
 from dotenv import load_dotenv
+from prompts import PROMPT_CLASIFICADOR, PROMPT_CONSULTAS, PROMPT_ACCIONES
 
 load_dotenv()
 
 SAPTIVA_API_KEY = os.getenv("SAPTIVA_API_KEY")
 SAPTIVA_URL = "https://api.saptiva.com/v1/chat/completions"
 
-prompt_template_no_member = '''
-Eres un asistente virtual especializado en información de la CANACO SERVYTUR León  (Cámara Nacional de Comercio, Servicios y Turismo). Tu función es proporcionar información clara, profesional y útil sobre CANACO: incluyendo procesos, requisitos, beneficios, eventos y otros aspectos relevantes.
+# Usa sesión para reducir overhead de conexión
+session = requests.Session()
 
-🧠 Usa un lenguaje profesional, accesible y preciso.
-🔹 Formato que debes seguir en cada respuesta (ideal para WhatsApp):
+# --- UTILIDAD: Extraer JSON válido ---
 
-* No uses formato Markdown ni símbolos como `###`, `**`, `_`, `>` u otros códigos especiales.
-* Usa títulos en mayúsculas o con asteriscos para simular negritas.
-* Separa los párrafos con saltos de línea para claridad.
-* Usa listas con viñetas (•) o listas numeradas.
-* Agrega emojis adecuados para dar calidez y facilitar la lectura (sin exceso).
-* Sé breve, directo y útil. Evita tecnicismos innecesarios.
-
-⛔ Importante:
-Nunca respondas con información que no esté incluida. Si no tienes la respuesta, indica que no cuentas con esa información.
-
-📚 Información clave:
- 
-🧠 ¿Qué es CANACO SERVYTUR León?
-Es una cámara empresarial con más de 100 años de trayectoria que representa al comercio, servicios y turismo en León, Guanajuato. Fue fundada el 24 de junio de 1913 y contribuye activamente al desarrollo económico y generación de empleo en la región.
-
-🎯 Misión
-Representar al comercio organizado y fortalecer la productividad de sus afiliados, generando empleo y desarrollo económico.
-
-🔭 Visión
-Ser la cámara empresarial más representativa y confiable del estado, destacando en liderazgo, compromiso y responsabilidad social.
-
-💡 Valores
-• Honestidad
-• Responsabilidad social
-• Congruencia
-• Unidad
-• Compromiso
-• Compañerismo
-• Libre expresión
-
-🎁 Beneficios para Afiliados
-📘 Capacitación Empresarial
-• Cursos, talleres, conferencias y seminarios en áreas clave como Finanzas, Ventas y Marketing.
-
-💼 Bolsa de Trabajo
-• Difusión de vacantes y vinculación con talento calificado.
-
-🏢 Espacios Empresariales
-• Renta de salas equipadas para eventos, ruedas de prensa, reclutamiento, etc.
-
-🗣 Centro de Idiomas
-• Clases de inglés con enfoque TOEFL.
-Afiliados: $1,075
-No afiliados: $1,375
-Lunes, miércoles y viernes. Examen de ubicación requerido.
-
-🤝 Red de Negocios
-• Eventos y plataformas para crear alianzas estratégicas entre empresas afiliadas.
-
-📑 Asesoría Especializada
-• Consultoría legal, fiscal, laboral e inmobiliaria mediante despachos aliados.
-
-📅 Feria de Servicios
-• Trámites con instituciones como IMSS, SAT, INFONAVIT, DIF, etc., en un solo lugar.
-
-📢 Publicidad para Afiliados
-• Difusión gratuita mensual en redes sociales de CANACO. También se pueden firmar convenios de colaboración.
-
-🏛 Datos Institucionales
-📍 Dirección: Blvd. Francisco Villa #1028, Fracc. María Dolores, León, Gto. C.P. 37550
-🕐 Horario: Lunes a viernes, de 8:30 a.m. a 5:00 p.m. , Tel: 477 714 2800.
-
-
-🌐 Redes Sociales:
-• Facebook: canacoservyturleon
-• Instagram: @canacoleon
-• YouTube: Canaco León
-• LinkedIn: Canaco León
-• X/Twitter: @canacoleon
-
-
-                                                                            
-'''
-
-prompt_template_member = ''' 
-#Eres un asistente virtual especializado en información de CANACO SERVYTUR León (Cámara Nacional de Comercio, Servicios y Turismo). Tu función es proporcionar información detallada, responder preguntas específicas sobre los procesos, beneficios, requisitos y eventos de CANACO SERVYTUR León, así como apoyar a los interesados y asociados.
-
-⚠️ IMPORTANTE: Solo puedes responder con un `JSON` si, y solo si, el usuario solicita claramente uno de los siguientes procesos. En caso contrario, responde con un mensaje informativo normal. 
-
-⚠️ NO inventes ni generes ningún otro `action` que no esté en esta lista.
-
-## ACCIONES PERMITIDAS:
-
-• crear_credenciales  
-• solicitud_eventos  
-• informacion_perfil  
-• informacion_membresia  
-• informacion_beneficios  
-• informacion_comunidad  
-• constancia_miembro
-
-## FORMATO DE RESPUESTA JSON
-
-Cuando detectes una de estas acciones válidas, responde así:
-
-        {
-        "mensaje": "Mensaje personalizado",
-        "action": "nombre_del_action_valido"
-        }
-
-
-        ####Crear credenciales:
-
-        {
-            "mensaje": "Estoy generando tu credencial, un momento...",
-            "action": "crear_credenciales"
-        }
-
-        ####Solicitud de eventos disponibles:
-
-        {
-            "mensaje": "Estos son los eventos disponibles...",
-            "action": "solicitud_eventos"
-        }
-
-        ####Información del perfil:
-
-        {
-            "mensaje": "Aquí tienes la información de tu perfil...",
-            "action": "informacion_perfil"
-        }
-
-        ####Pago de Membresía:
-
-        {
-            "mensaje": "Aquí tienes la información de tu Membresía...",
-            "action": "informacion_membresia"
-        }
-
-        ####Información de Beneficios:
-            
-        {
-            "mensaje": "Aquí tienes la información de los beneficios...",
-            "action": "informacion_beneficios"
-        }
-
-        ####Información de Comunidad:
-                
-        {
-            "mensaje": "Aquí tienes la información de las comunidades...",
-            "action": "informacion_comunidad"
-        } 
-        
-        ####Constancia del Miembro:
-                
-            {
-                "mensaje": "Aquí tienes la información de la constancia...",
-                "action": "constancia_miembro"
-            }
-        '''
-def ai_manager(message: str, member: bool = False):
-    print(f"Received member: {member}")
-
-    if member:
-        prompt_template = prompt_template_member
-        model_name = "Saptiva Ops"  # Capaz de razonar y obedecer lógica
-        temperature = 0.2           # Más estricta para acciones JSON
-    else:
-        prompt_template = prompt_template_no_member
-        model_name = "Saptiva Turbo"  # Rápido, bajo costo, ideal para consultas informativas
-        temperature = 0.4             # Más natural para respuestas generales
-
+def extraer_json_valido(texto: str) -> dict:
     try:
-        response = requests.post(
+        texto_limpio = texto.strip().replace("```json", "").replace("```", "")
+        return json.loads(texto_limpio)
+    except Exception as e:
+        print(f"⚠️ Error parseando intención: {e} | Respuesta cruda: {texto}")
+        return {}
+
+# --- DETECTOR DE INTENCIÓN ---
+
+def detectar_intencion(message: str) -> str:
+    try:
+        response = session.post(
             SAPTIVA_URL,
             headers={
                 "Authorization": f"Bearer {SAPTIVA_API_KEY}",
                 "Content-Type": "application/json"
             },
             json={
-                "model": model_name,
+                "model": "Saptiva Turbo",
                 "messages": [
-                    {"role": "system", "content": prompt_template},
+                    {"role": "system", "content": PROMPT_CLASIFICADOR},
                     {"role": "user", "content": message}
                 ],
-                "temperature": temperature,
-                "max_tokens": 1024
+                "temperature": 0.0,
+                "max_tokens": 50
             },
-            timeout=60
+            timeout=15
         )
-
         response.raise_for_status()
-        data = response.json()
-        content = data.get("choices", [{}])[0].get("message", {}).get("content", "[Sin respuesta]")
-
-        content = content.replace("<think>", "").replace("</think>", "").strip()
-        return content
-
+        raw = response.json()["choices"][0]["message"]["content"]
+        data = extraer_json_valido(raw)
+        return data.get("intencion", "consulta_general")
     except Exception as e:
-        print(f"Error al consultar Saptiva: {e}")
+        print(f"❌ Error en clasificador: {e}")
+        return "consulta_general"
+
+# --- MANAGER PRINCIPAL ---
+
+def ai_manager(message: str, member: bool = False) -> str:
+    print(f"📩 Mensaje: '{message}' | ¿Miembro?: {member}")
+
+    intencion = detectar_intencion(message)
+    print(f"🔍 Intención detectada: {intencion}")
+
+    if intencion == "fuera_de_dominio":
+        return "Lo siento, solo puedo ayudarte con información relacionada con CANACO SERVYTUR León."
+
+    # Siempre usamos Saptiva Turbo
+    modelo = "Saptiva Turbo"
+
+    if intencion == "consulta_general":
+        prompt = PROMPT_CONSULTAS
+    elif intencion == "accion_personal":
+        if not member:
+            return "Esta información está disponible solo para miembros afiliados a CANACO SERVYTUR León. Si deseas afiliarte, con gusto te explico cómo hacerlo. 😊"
+        prompt = PROMPT_ACCIONES
+    else:
+        # Fallback seguro
+        prompt = PROMPT_CONSULTAS
+
+    try:
+        response = session.post(
+            SAPTIVA_URL,
+            headers={
+                "Authorization": f"Bearer {SAPTIVA_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": modelo,
+                "messages": [
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": message}
+                ],
+                "temperature": 0.2,
+                "max_tokens": 400
+            },
+            timeout=20
+        )
+        response.raise_for_status()
+        content = response.json().get("choices", [{}])[0].get("message", {}).get("content")
+        if not content:
+            return "No se pudo generar una respuesta. Intenta de nuevo."
+        return content.strip().replace("<think>", "").replace("</think>", "")
+    except Exception as e:
+        print(f"❌ Error al consultar Saptiva: {e}")
         return "Ocurrió un error al generar la respuesta."
