@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import re
 from dotenv import load_dotenv
 from prompts import PROMPT_CLASIFICADOR, PROMPT_CONSULTAS, PROMPT_ACCIONES
 
@@ -8,21 +9,24 @@ load_dotenv()
 
 SAPTIVA_API_KEY = os.getenv("SAPTIVA_API_KEY")
 SAPTIVA_URL = "https://api.saptiva.com/v1/chat/completions"
+session = requests.Session()  # Para reusar conexión
 
-# Usa sesión para reducir overhead de conexión
-session = requests.Session()
-
-# --- UTILIDAD: Extraer JSON válido ---
 
 def extraer_json_valido(texto: str) -> dict:
     try:
-        texto_limpio = texto.strip().replace("```json", "").replace("```", "")
+        # Limpieza de bloques ```json
+        texto_limpio = texto.strip().replace("```json", "").replace("```", "").strip()
         return json.loads(texto_limpio)
-    except Exception as e:
-        print(f"⚠️ Error parseando intención: {e} | Respuesta cruda: {texto}")
+    except:
+        try:
+            match = re.search(r'\{.*?\}', texto, re.DOTALL)
+            if match:
+                return json.loads(match.group(0))
+        except Exception as e:
+            print(f"⚠️ Error extrayendo JSON con regex: {e}")
+        print(f"⚠️ Texto inválido: {texto}")
         return {}
 
-# --- DETECTOR DE INTENCIÓN ---
 
 def detectar_intencion(message: str) -> str:
     try:
@@ -41,9 +45,8 @@ def detectar_intencion(message: str) -> str:
                 "temperature": 0.0,
                 "max_tokens": 50
             },
-            timeout=15
+            timeout=10
         )
-        response.raise_for_status()
         raw = response.json()["choices"][0]["message"]["content"]
         data = extraer_json_valido(raw)
         return data.get("intencion", "consulta_general")
@@ -51,29 +54,18 @@ def detectar_intencion(message: str) -> str:
         print(f"❌ Error en clasificador: {e}")
         return "consulta_general"
 
-# --- MANAGER PRINCIPAL ---
 
 def ai_manager(message: str, member: bool = False) -> str:
     print(f"📩 Mensaje: '{message}' | ¿Miembro?: {member}")
-
     intencion = detectar_intencion(message)
     print(f"🔍 Intención detectada: {intencion}")
 
     if intencion == "fuera_de_dominio":
         return "Lo siento, solo puedo ayudarte con información relacionada con CANACO SERVYTUR León."
 
-    # Siempre usamos Saptiva Turbo
-    modelo = "Saptiva Turbo"
-
-    if intencion == "consulta_general":
-        prompt = PROMPT_CONSULTAS
-    elif intencion == "accion_personal":
-        if not member:
-            return "Esta información está disponible solo para miembros afiliados a CANACO SERVYTUR León. Si deseas afiliarte, con gusto te explico cómo hacerlo. 😊"
-        prompt = PROMPT_ACCIONES
-    else:
-        # Fallback seguro
-        prompt = PROMPT_CONSULTAS
+    prompt = PROMPT_CONSULTAS if intencion == "consulta_general" else PROMPT_ACCIONES
+    if intencion == "accion_personal" and not member:
+        return "Esta información está disponible solo para miembros afiliados a CANACO SERVYTUR León. Si deseas afiliarte, con gusto te explico cómo hacerlo. 😊"
 
     try:
         response = session.post(
@@ -83,7 +75,7 @@ def ai_manager(message: str, member: bool = False) -> str:
                 "Content-Type": "application/json"
             },
             json={
-                "model": modelo,
+                "model": "Saptiva Turbo",
                 "messages": [
                     {"role": "system", "content": prompt},
                     {"role": "user", "content": message}
@@ -93,11 +85,14 @@ def ai_manager(message: str, member: bool = False) -> str:
             },
             timeout=20
         )
-        response.raise_for_status()
-        content = response.json().get("choices", [{}])[0].get("message", {}).get("content")
-        if not content:
-            return "No se pudo generar una respuesta. Intenta de nuevo."
-        return content.strip().replace("<think>", "").replace("</think>", "")
+        raw = response.json()["choices"][0]["message"]["content"]
+
+        if intencion == "accion_personal":
+            data = extraer_json_valido(raw)
+            return json.dumps(data) if data else "No se pudo obtener la acción."
+        else:
+            return raw.strip()
+
     except Exception as e:
-        print(f"❌ Error al consultar Saptiva: {e}")
+        print(f"❌ Error en AI: {e}")
         return "Ocurrió un error al generar la respuesta."
