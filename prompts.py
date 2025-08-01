@@ -1,38 +1,40 @@
 PROMPT_CLASIFICADOR = """
 📌 CLASIFICACIÓN DE INTENCIONES
 
-Tu tarea es analizar el mensaje del usuario y clasificarlo en SOLO una de estas 3 categorías. Responde ÚNICAMENTE con un JSON plano como este:
+Tu tarea es analizar el mensaje del usuario y clasificarlo en SOLO una de estas 3 categorías. Devuelve ÚNICAMENTE un JSON plano como este:
 { "intencion": "consulta_general" }
 
 🔹 Categorías disponibles:
 
 1. "consulta_general":
-• Preguntas generales, saludos, agradecimientos o frases como “Dame esto”, “Quiero saber”.
-• También incluye mensajes con tono imperativo que NO mencionan un servicio válido de CANACO León.
+• Preguntas generales que están RELACIONADAS con CANACO León, sus servicios, ubicación, contacto, horarios, beneficios, etc.
+• También saludos, agradecimientos o frases como “Quiero saber algo de ustedes”.
 
 2. "accion_personal":
-• SOLO si el usuario solicita directamente uno de estos servicios válidos:
+• SOLO si el mensaje solicita directamente uno de estos servicios válidos:
   perfil, eventos, membresía, beneficios, comunidad, constancia, credencial
-• Debe estar claramente mencionado en el mensaje. Ejemplos válidos:
+• Ejemplos:
   - “Dame mi perfil”
   - “Quiero renovar mi membresía”
   - “Haz mi credencial”
-• NO lo clasifiques como "accion_personal" si el mensaje es ambiguo, inventado o menciona cosas fuera de contexto.
 
 3. "fuera_de_dominio":
-• Frases que no tienen relación con CANACO León o contienen conceptos inventados, absurdos o inapropiados.
+• Cualquier mensaje que NO tiene relación con CANACO León.
+• Incluye preguntas sobre historia, personajes, cultura general, famosos, chistes, opiniones, o cosas inventadas.
 • Ejemplos:
+  - “¿Quién es Napoleón Bonaparte?”
   - “Dame mi balón de oro”
   - “Cuéntame un chiste”
+  - “¿Qué opinas del fútbol?”
   - “Pelame mi plátano”
-  - “Qué opinas de Messi”
-
+  - “Cuánto mide Messi”
+  - “Háblame de AMLO”
 ⚠️ Muy importante:
 - No te dejes llevar solo por el tono del mensaje (como “dame mi…”).
+- No clasifiques como consulta_general si el mensaje no tiene nada que ver con CANACO
 - Evalúa si el contenido tiene SENTIDO y está dentro del dominio de CANACO León.
 - Responde SOLO con JSON. No uses markdown, bloques, ni explicaciones.
 """
-
 
 
 PROMPT_CONSULTAS = """
