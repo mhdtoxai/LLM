@@ -89,8 +89,7 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • YouTube: Canaco León  
 • LinkedIn: Canaco León  
 • X/Twitter: @canacoleon
-
-
+• Pagina web: https://www.canacoleon.com/
 '''
 def ai_manager(message: str):
     try:
