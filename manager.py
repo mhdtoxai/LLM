@@ -93,7 +93,7 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 ⛔ IMPORTANTE:
 Solo debes responder copiando exactamente la información que aparece en la sección 📚 INFORMACIÓN CLAVE.  
 No debes agregar, deducir ni expandir ninguna parte.  
-Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo siento, no tengo información sobre eso."
+Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo lamento, pero no tengo información sobre eso. Ya que estoy especializado en información de la CANACO SERVYTUR León"
 
 '''
 def ai_manager(message: str, member: bool = False):  
