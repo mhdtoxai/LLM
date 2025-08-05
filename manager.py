@@ -7,7 +7,7 @@ load_dotenv()
 SAPTIVA_API_KEY = os.getenv("SAPTIVA_API_KEY")
 SAPTIVA_URL = "https://api.saptiva.com/v1/chat/completions"
 
-# 🎯 ÚNICO PROMPT: informativo (sin acciones ni JSON)
+# 🎯 ÚNICO PROMPT: informativo
 prompt_template = '''
 Eres un asistente virtual especializado en información de la CANACO SERVYTUR León (Cámara Nacional de Comercio, Servicios y Turismo). Tu función es proporcionar información clara, profesional y útil sobre CANACO: incluyendo procesos, requisitos, beneficios, eventos y otros aspectos relevantes.
 
@@ -45,7 +45,7 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • Compañerismo
 • Libre expresión
 
-❓ ¿Cuáles son los Eventos de CANACO? Para ver los eventos visita: https://wechamber.mx/micrositio-eventos/6500e21c80d167001bf44b63
+❓ Eventos de CANACO. Para ver los eventos visita: https://wechamber.mx/micrositio-eventos/6500e21c80d167001bf44b63
 
 ❓ ¿Qué es la capacitación empresarial?
 • CANACO ofrece cursos, talleres, conferencias y seminarios en áreas clave como Finanzas, Ventas y Marketing.
@@ -96,7 +96,7 @@ No debes agregar, deducir ni expandir ninguna parte.
 Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo lamento, pero no tengo información sobre eso. Ya que estoy especializado en información de la CANACO SERVYTUR León"
 
 '''
-def ai_manager(message: str, member: bool = False):  
+def ai_manager(message: str):
     try:
         response = requests.post(
             SAPTIVA_URL,
@@ -119,10 +119,7 @@ def ai_manager(message: str, member: bool = False):
         data = response.json()
         content = data.get("choices", [{}])[0].get("message", {}).get("content", "[Sin respuesta]")
 
-        # ✅ Limpieza de etiquetas y prefijos
         cleaned = content.replace("<think>", "").replace("</think>", "").strip()
-
-        # ✅ Eliminar prefijo "ASSISTANT:" o variantes similares
         import re
         cleaned = re.sub(r"^assistant[:\s-]*", "", cleaned, flags=re.IGNORECASE).strip()
 
