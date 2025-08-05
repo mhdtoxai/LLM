@@ -91,7 +91,9 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • X/Twitter: @canacoleon
 
 ⛔ IMPORTANTE:
-Si el usuario hace una pregunta que no aparece literalmente en la sección de INFORMACIÓN CLAVE, responde: "Lo siento, no tengo información sobre eso."
+Solo debes responder copiando exactamente la información que aparece en la sección 📚 INFORMACIÓN CLAVE.  
+No debes agregar, deducir ni expandir ninguna parte.  
+Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo siento, no tengo información sobre eso."
 
 '''
 
@@ -109,7 +111,7 @@ def ai_manager(message: str, member: bool = False):
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
-                "temperature": 0.0,
+                "temperature": 0.2,
                 "max_tokens": 1024,
               
             }
