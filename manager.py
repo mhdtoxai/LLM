@@ -91,7 +91,8 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • X/Twitter: @canacoleon
 
 ⛔ IMPORTANTE:
-Solo debes responder con la información incluida en este mensaje. No inventes, no infieras ni completes con conocimiento externo.
+Si el usuario hace una pregunta que no aparece literalmente en la sección de INFORMACIÓN CLAVE, responde: "Lo siento, no tengo información sobre eso."
+
 '''
 
 def ai_manager(message: str, member: bool = False):  
@@ -108,7 +109,7 @@ def ai_manager(message: str, member: bool = False):
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
-                "temperature": 0.4,
+                "temperature": 0.0,
                 "max_tokens": 1024,
               
             }
