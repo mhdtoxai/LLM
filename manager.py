@@ -96,7 +96,6 @@ No debes agregar, deducir ni expandir ninguna parte.
 Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo siento, no tengo información sobre eso."
 
 '''
-
 def ai_manager(message: str, member: bool = False):  
     try:
         response = requests.post(
@@ -113,7 +112,6 @@ def ai_manager(message: str, member: bool = False):
                 ],
                 "temperature": 0.2,
                 "max_tokens": 1024,
-              
             }
         )
 
@@ -121,7 +119,14 @@ def ai_manager(message: str, member: bool = False):
         data = response.json()
         content = data.get("choices", [{}])[0].get("message", {}).get("content", "[Sin respuesta]")
 
-        return content.strip().replace("<think>", "").replace("</think>", "")
+        # ✅ Limpieza de etiquetas y prefijos
+        cleaned = content.replace("<think>", "").replace("</think>", "").strip()
+
+        # ✅ Eliminar prefijo "ASSISTANT:" o variantes similares
+        import re
+        cleaned = re.sub(r"^assistant[:\s-]*", "", cleaned, flags=re.IGNORECASE).strip()
+
+        return cleaned
 
     except Exception as e:
         print(f"Error al consultar Saptiva: {e}")
