@@ -12,7 +12,7 @@ chat_router = APIRouter()
 class Message(BaseModel):
     from_: str = Field(..., alias='from')
     query: str
-    organization_id: str  # 🔹 Eliminado: member
+    organization_id: str 
 
 @chat_router.post("/")
 async def chat_api(request: Request):
@@ -43,7 +43,6 @@ async def chat_api(request: Request):
         if extract['error'] is not None:
             chat_history = message.query
 
-        # ✅ Corregido: eliminar member
         response_message = ai_manager(chat_history)
         response_message = response_message.replace('**', '*')
 

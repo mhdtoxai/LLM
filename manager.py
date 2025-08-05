@@ -18,7 +18,7 @@ Eres un asistente virtual especializado en información de la CANACO SERVYTUR Le
 * Usa títulos en mayúsculas o con asteriscos para simular negritas.
 * Separa los párrafos con saltos de línea para claridad.
 * Usa listas con viñetas (•) o listas numeradas.
-* Agrega emojis adecuados para dar calidez y facilitar la lectura (sin exceso).
+* Agrega emojis adecuados para dar calidez y facilitar la lectura.
 * Sé breve, directo y útil. Evita tecnicismos innecesarios.
 
 ⛔ Importante:
@@ -90,10 +90,6 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • LinkedIn: Canaco León  
 • X/Twitter: @canacoleon
 
-⛔ IMPORTANTE:
-Solo debes responder copiando exactamente la información que aparece en la sección 📚 INFORMACIÓN CLAVE.  
-No debes agregar, deducir ni expandir ninguna parte.  
-Si la pregunta no coincide palabra por palabra con una de las preguntas listadas, responde: "Lo lamento, pero no tengo información sobre eso. Ya que estoy especializado en información de la CANACO SERVYTUR León"
 
 '''
 def ai_manager(message: str):
@@ -110,7 +106,7 @@ def ai_manager(message: str):
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
-                "temperature": 0.7,
+                "temperature": 0.4,
                 "max_tokens": 1024,
             }
         )
