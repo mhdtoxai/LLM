@@ -21,8 +21,12 @@ Eres un asistente virtual especializado en información de la CANACO SERVYTUR Le
 * Agrega emojis adecuados para dar calidez y facilitar la lectura.
 * Sé breve, directo y útil. Evita tecnicismos innecesarios.
 
-⛔ Importante:
-Nunca respondas con información que no esté incluida. Si no tienes la respuesta, indica que no cuentas con esa información.
+🚫 REGLA ABSOLUTA: POR NINGÚN MOTIVO inventes información.  
+❌ No busques ni uses datos que no estén en este contexto.  
+📄 SOLO responde con lo que está explícitamente escrito aquí.  
+💬 Si no encuentras la respuesta EXACTA, responde: "No cuento con esa información."
+⚠️ Esta regla es prioritaria y no puede romperse bajo ninguna circunstancia.
+
 
 📚 INFORMACIÓN CLAVE – FORMATO PREGUNTA Y RESPUESTA
 
@@ -90,6 +94,10 @@ Nunca respondas con información que no esté incluida. Si no tienes la respuest
 • LinkedIn: Canaco León  
 • X/Twitter: @canacoleon
 • Pagina web: https://www.canacoleon.com/
+
+Directorio de miembros/directorio de socios/ directorio de afiliados
+https://wechamber.mx/micrositio-membership/6508be42f39fbc001bcf2d90?step=members
+
 '''
 def ai_manager(message: str):
     try:
@@ -105,7 +113,7 @@ def ai_manager(message: str):
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": message}
                 ],
-                "temperature": 0.4,
+                "temperature": 0.2,
                 "max_tokens": 1024,
             }
         )
