@@ -95,8 +95,7 @@ Eres un asistente virtual especializado en información de la CANACO SERVYTUR Le
 • X/Twitter: @canacoleon
 • Pagina web: https://www.canacoleon.com/
 
-Directorio de miembros/directorio de socios/ directorio de afiliados
-https://wechamber.mx/micrositio-membership/6508be42f39fbc001bcf2d90?step=members
+❓ Directorio de miembros/directorio de socios/ directorio de afiliados: Para ver el directorio visita: https://wechamber.mx/micrositio-membership/6508be42f39fbc001bcf2d90?step=members
 
 '''
 def ai_manager(message: str):
